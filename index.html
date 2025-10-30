@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gummy Snack – Catálogo</title>
+  <style>
+    :root{
+      --bg:#fff;
+      --fg:#151515;
+      --muted:#5a5a5a;
+      --brand:#ff2d55; /* rosa chicle */
+      --brand-2:#ff9f0a; /* naranja mango */
+      --pill:#ffffffcc;
+      --ring:rgba(0,0,0,.10);
+      --shadow:0 10px 30px rgba(0,0,0,.12);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;color:var(--fg);font:16px/1.4 ui-sans-serif,system-ui,-apple-system,Segoe UI,Inter,Roboto,Helvetica,Arial,sans-serif;
+      background: repeating-linear-gradient(60deg,
+        #fde68a 0 70px,
+        #fbcfe8 70px 140px,
+        #bae6fd 140px 210px,
+        #bbf7d0 210px 280px,
+        #fecaca 280px 350px,
+        #e9d5ff 350px 420px,
+        #ffd2b3 420px 490px);
+      background-attachment: fixed;
+    }
+    header{
+      position:sticky;top:0;z-index:20;background:linear-gradient(90deg,#ffffffd9,#fff8f6d9);backdrop-filter:saturate(160%) blur(8px);
+      border-bottom:1px solid var(--ring);
+    }
+    .wrap{max-width:1180px;margin:0 auto;padding:18px 20px}
+    .brand{display:flex;gap:14px;align-items:center}
+    .brand h1{font-size:30px;margin:0;font-weight:900;letter-spacing:.3px}
+    .brand small{color:var(--muted)}
+    .searchbar{display:flex;gap:10px;align-items:center;margin-top:12px}
+    .searchbar input{flex:1;padding:12px 14px;border-radius:999px;border:1px solid var(--ring);outline:none;background:#fff}
+    .searchbar select{padding:12px 14px;border-radius:999px;border:1px solid var(--ring);background:#fff}
+
+    main{padding:26px 0 130px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:22px}
+
+    .card{background:#fff;border-radius:var(--radius);padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);
+      border:2px solid transparent;
+      background:
+        linear-gradient(#fff,#fff) padding-box,
+        conic-gradient(from 180deg at 50% 50%, #ff2d55, #ff9f0a, #0a84ff, #34c759, #ff2d55) border-box;
+    }
+    .thumb{width:100%;aspect-ratio:1/1;border-radius:999px;overflow:hidden;display:grid;place-items:center;border:4px solid #fff;box-shadow:0 10px 20px rgba(0,0,0,.12);
+      background: linear-gradient(135deg,#ffe2ec,#fff3b0);
+    }
+    .thumb img{width:100%;height:100%;object-fit:cover}
+    .title{font-weight:900;letter-spacing:.2px}
+    .muted{color:var(--muted);font-size:12px}
+
+    .row{display:flex;gap:10px;align-items:center}
+    .row .grow{flex:1}
+    .qty{display:flex;align-items:center;border:1px solid var(--ring);border-radius:14px;overflow:hidden;background:#fff}
+    .qty button{background:#fff;border:0;padding:8px 10px;font-weight:800}
+    .qty input{width:44px;text-align:center;border:0;padding:8px}
+
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 14px;border-radius:14px;border:0;cursor:pointer;color:#fff;font-weight:800;
+      background-image:linear-gradient(135deg,var(--brand),var(--brand-2));box-shadow:0 8px 18px rgba(255,45,85,.25);
+    }
+    .btn.secondary{background-image:none;background:#fff;color:var(--brand);border:2px solid var(--brand)}
+    .btn:disabled{opacity:.5;cursor:not-allowed}
+
+    /* Carrito */
+    .cart-fab{position:fixed;right:18px;bottom:18px;background-image:linear-gradient(135deg,var(--brand),var(--brand-2));color:#fff;border-radius:999px;border:0;padding:14px 16px;font-weight:900;box-shadow:var(--shadow);z-index:30}
+    .drawer{position:fixed;inset:auto 0 0 0;background:#fff;border-top:1px solid var(--ring);box-shadow:0 -14px 30px rgba(0,0,0,.18);border-top-left-radius:24px;border-top-right-radius:24px;transform:translateY(100%);transition:transform .35s ease;z-index:40}
+    .drawer.open{transform:translateY(0)}
+    .drawer .head{display:flex;align-items:center;justify-content:space-between;padding:16px 20px}
+    .drawer .items{max-height:48vh;overflow:auto;padding:0 20px}
+    .cart-item{display:grid;grid-template-columns:54px 1fr auto;gap:12px;padding:12px 0;border-bottom:1px dashed var(--ring)}
+    .cart-thumb{width:54px;height:54px;border-radius:50%;overflow:hidden;border:2px solid #fff;box-shadow:0 6px 12px rgba(0,0,0,.1);background:#ffe}
+    .cart-thumb img{width:100%;height:100%;object-fit:cover}
+    .cart-meta{font-size:13px;color:var(--muted)}
+    .footer{padding:16px 20px 24px;border-top:1px solid var(--ring);display:grid;gap:10px}
+    .total{display:flex;justify-content:space-between;font-weight:900}
+
+    /* Pills de categoría */
+    .pillbar{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 0}
+    .pill{padding:8px 12px;border-radius:999px;border:1px solid var(--ring);background:#fff;cursor:pointer;font-weight:700}
+    .pill:nth-child(4n+1){background:#ffe8ef}
+    .pill:nth-child(4n+2){background:#fff2cd}
+    .pill:nth-child(4n+3){background:#e3f2ff}
+    .pill:nth-child(4n+4){background:#eaffee}
+    .pill.active{outline:3px solid #00000014}
+
+    .note{font-size:12px;color:var(--muted);margin-top:8px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap">
+      <div class="brand">
+        <div class="thumb" style="width:58px;height:58px"><img alt="Gummy Snack" src="https://images.unsplash.com/photo-1541976590-713941681591?q=80&w=400&auto=format&fit=crop"/></div>
+        <div>
+          <h1>Gummy Snack</h1>
+          <small>Catálogo de dulcería · imágenes en círculos · estilo limpio</small>
+        </div>
+      </div>
+      <div class="searchbar">
+        <input id="q" placeholder="Buscar producto… (ej. mango, lombrices, skittles)" oninput="render()"/>
+        <select id="weightFilter" class="chip" onchange="render()">
+          <option value="">Todos los pesos</option>
+          <option>250 g</option>
+          <option>500 g</option>
+          <option>1 kg</option>
+          <option>1.2 kg</option>
+          <option>10 piezas</option>
+          <option>16 tiras</option>
+          <option>18 piezas</option>
+          <option>6 piezas</option>
+        </select>
+      </div>
+      <div class="pillbar" id="catbar"></div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div id="grid" class="grid"></div>
+    <p class="note">Nota: el carrito se reinicia automáticamente al salir de la página para que múltiples personas lo usen al mismo tiempo.</p>
+  </main>
+
+  <button class="cart-fab" onclick="toggleCart(true)">🛒 <span id="cartCount">0</span></button>
+
+  <section id="drawer" class="drawer" aria-label="Carrito">
+    <div class="head">
+      <strong>Tu carrito</strong>
+      <div class="row">
+        <button class="btn secondary" onclick="emptyCart()">Vaciar</button>
+        <button class="btn" onclick="toggleCart(false)">Cerrar</button>
+      </div>
+    </div>
+    <div class="items" id="cartItems"></div>
+    <div class="footer">
+      <div class="total"><span>Total</span><span id="cartTotal">$0</span></div>
+      <button id="waBtn" class="btn" onclick="sendWhatsApp()">Enviar pedido por WhatsApp</button>
+      <small class="muted">Al continuar, se abrirá WhatsApp con tu pedido como mensaje.</small>
+    </div>
+  </section>
+
+<script>
+/*******************************
+ * CONFIGURACIÓN RÁPIDA
+ *******************************/
+// Teléfono con WhatsApp (formato internacional, 52=MX). Cámbialo sin espacios.
+const WHATSAPP_NUMBER = "5215512345678"; // ← REEMPLAZA AQUÍ
+
+// Si no encuentras algún precio en el catálogo, puedes dejarlo en null; el de 1.2 kg se calculará 1.2× el de 1 kg.
+// Agrega/edita productos fácilmente. Las imágenes se verán en círculo.
+const PRODUCTS = [
+  // Gomitas nacionales
+  p({ name:"Mango", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Mini gummy", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Corazones", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Frutigomas", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Picafresas", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Picagomas", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Acidulados", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Cheery balls", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Sandía", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Aros de durazno", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Aros de manzana", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Lombrices", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Lombrices neón", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Lombrices de mango", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Dientes", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Pingüino", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Guanábana", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Panditas", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Panditas neón", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Lombrices de pepino", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+  p({ name:"Maracuyá", category:"Gomitas nacionales", prices:{"250 g":65, "500 g":115, "1 kg":219} }),
+
+  // Mix
+  p({ name:"Mix de hasta 20 sabores nacionales", category:"Mix", prices:{"500 g":130, "1 kg":239} }),
+  p({ name:"Mix sin chile (hasta 20 sabores nacionales)", category:"Mix", prices:{"500 g":130, "1 kg":239} }),
+  p({ name:"Charola mix 5 sabores nacionales", category:"Mix", prices:{"1.2 kg":299} }),
+
+  // Piezas / Tiras
+  p({ name:"Jolly Ranchers duros", category:"Piezas", prices:{"10 piezas":35} }),
+  p({ name:"Jolly Ranchers suaves", category:"Piezas", prices:{"18 piezas":100} }),
+  p({ name:"Skwinkles (sandía/piña-tamarindo)", category:"Piezas", prices:{"16 tiras":110} }),
+  p({ name:"Indi dedos", category:"Piezas", prices:{"6 piezas":100} }),
+  p({ name:"Xtreme tiras", category:"Piezas", prices:{"16 tiras":100} }),
+
+  // Importados
+  p({ name:"Skittles", category:"Importados", prices:{"250 g":135, "500 g":249} }),
+  p({ name:"Sour Patch", category:"Importados", prices:{"250 g":135, "500 g":249} }),
+  p({ name:"Life Savers", category:"Importados", prices:{"250 g":135, "500 g":249} }),
+  p({ name:"Dulcigomas", category:"Importados", prices:{"250 g":95} }),
+  p({ name:"Gomitas Coca Cola", category:"Importados", prices:{"250 g":95, "500 g":299} }),
+  p({ name:"Skittles gomita", category:"Importados", prices:{"250 g":155, "500 g":299} }),
+  p({ name:"Pulparindos", category:"Importados", prices:{"250 g":95, "500 g":180} }),
+
+  // Otros
+  p({ name:"Fruta deshidratada", category:"Otros", prices:{"250 g":95, "500 g":180} })
+];
+
+/*******************************
+ * LÓGICA
+ *******************************/
+function p({name,category,img,prices}){
+  const weights=["250 g","500 g","1 kg","1.2 kg"]; const px={};
+  weights.forEach(w=>{ if(prices[w]!=null) px[w]=prices[w]; });
+  // Precio 1.2 kg automático si no está definido y sí existe 1 kg
+  if(px["1.2 kg"]==null && px["1 kg"]!=null){ px["1.2 kg"]=Math.round(px["1 kg"]*1.2); }
+  return { id:slug(name+category), name, category, img, prices:px };
+}
+
+function slug(s){return s.toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'').replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');}
+
+const state={
+  cat:null,
+  cart: loadCart()
+}
+
+function categories(){
+  return ["Todos", ...Array.from(new Set(PRODUCTS.map(x=>x.category)))];
+}
+
+function renderCats(){
+  const el=document.getElementById('catbar');
+  el.innerHTML='';
+  categories().forEach(c=>{
+    const b=document.createElement('button');
+    b.className='pill'+(state.cat===c||(!state.cat&&c==="Todos")?' active':'');
+    b.textContent=c; b.onclick=()=>{state.cat=c==="Todos"?null:c; render();};
+    el.appendChild(b);
+  });
+}
+
+function render(){
+  const q=(document.getElementById('q').value||'').toLowerCase();
+  const wf=document.getElementById('weightFilter').value;
+  let list=PRODUCTS.filter(p=>!state.cat||p.category===state.cat);
+  if(q) list=list.filter(p=>p.name.toLowerCase().includes(q));
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  list.forEach(p=>{
+    const card=document.createElement('div');card.className='card';
+    card.innerHTML=`
+      <div class="thumb">${p.img?`<img alt="${p.name}" src="${p.img}">`:'<span>IMG</span>'}</div>
+      <div class="title">${p.name}</div>
+      <div class="muted">${p.category}</div>
+      <div class="row">
+        <select class="grow" data-sel>
+          ${["250 g","1 kg","1.2 kg"].map(w=>`<option ${wf&&wf!==w?'disabled':''} value="${w}">${w} ${priceLabel(p,w)}</option>`).join('')}
+        </select>
+        <div class="qty">
+          <button data-dec>-</button>
+          <input data-qty type="number" min="1" max="99" value="1" />
+          <button data-inc>+</button>
+        </div>
+      </div>
+      <button class="btn" data-add>Agregar</button>
+    `;
+    const sel=card.querySelector('[data-sel]');
+    const qty=card.querySelector('[data-qty]');
+    card.querySelector('[data-dec]').onclick=()=>{qty.value=Math.max(1,(+qty.value||1)-1)};
+    card.querySelector('[data-inc]').onclick=()=>{qty.value=Math.min(99,(+qty.value||1)+1)};
+    card.querySelector('[data-add]').onclick=()=>{
+      const w=sel.value; const n=+qty.value||1; const price=getPrice(p,w);
+      if(price==null){alert('Falta precio para '+p.name+' ('+w+'). Edita la tabla PRODUCTS.');return}
+      addToCart({id:p.id+"-"+w, name:p.name, weight:w, unitPrice:price, qty:n, img:p.img});
+    };
+    grid.appendChild(card);
+  });
+  updateBadge();
+}
+
+function priceLabel(p,w){ const v=getPrice(p,w); return v!=null?`· $${v}`:'· s/p'; }
+function getPrice(p,w){ return p.prices[w] ?? null; }
+
+/********** CARRITO **********/
+function loadCart(){ try{ return JSON.parse(sessionStorage.getItem('gummy-cart')||'[]'); }catch{ return [] } }
+function saveCart(){ sessionStorage.setItem('gummy-cart', JSON.stringify(state.cart)); updateBadge(); renderCart(); }
+
+function updateBadge(){
+  const c= state.cart.reduce((a,b)=>a+b.qty,0);
+  document.getElementById('cartCount').textContent=c;
+}
+
+function addToCart(item){
+  const i=state.cart.findIndex(x=>x.id===item.id);
+  if(i>=0){ state.cart[i].qty=Math.min(999, state.cart[i].qty+item.qty); }
+  else state.cart.push(item);
+  saveCart();
+  toggleCart(true);
+}
+
+function renderCart(){
+  const box=document.getElementById('cartItems');
+  box.innerHTML='';
+  let total=0;
+  state.cart.forEach((it,idx)=>{
+    const li=document.createElement('div'); li.className='cart-item';
+    total += it.unitPrice*it.qty;
+    li.innerHTML=`
+      <div class="cart-thumb">${it.img?`<img src="${it.img}" alt="${it.name}">`:''}</div>
+      <div>
+        <div><strong>${it.name}</strong></div>
+        <div class="cart-meta">${it.weight} · $${it.unitPrice} × 
+          <input type="number" min="1" max="999" value="${it.qty}" style="width:64px" data-idx="${idx}" />
+        </div>
+      </div>
+      <div class="row">
+        <strong>$${it.unitPrice*it.qty}</strong>
+        <button class="btn secondary" onclick="removeItem(${idx})">✕</button>
+      </div>
+    `;
+    li.querySelector('input').oninput=(e)=>{ const n=Math.max(1, Math.min(999, +e.target.value||1)); state.cart[idx].qty=n; saveCart(); };
+    box.appendChild(li);
+  });
+  document.getElementById('cartTotal').textContent='$'+total;
+  document.getElementById('waBtn').disabled= state.cart.length===0;
+}
+
+function removeItem(i){ state.cart.splice(i,1); saveCart(); }
+function emptyCart(){ state.cart.length=0; saveCart(); }
+
+function toggleCart(open){ const d=document.getElementById('drawer'); d.classList[open?'add':'remove']('open'); renderCart(); }
+
+function sendWhatsApp(){
+  if(!state.cart.length) return;
+  const lines=[`*Pedido Gummy Snack*`,''];
+  let total=0;
+  state.cart.forEach(it=>{ const sub=it.unitPrice*it.qty; total+=sub; lines.push(`• ${it.name} (${it.weight}) × ${it.qty} = $${sub}`); });
+  lines.push('',`*Total:* $${total}`);
+  const msg=encodeURIComponent(lines.join('\n'));
+  const url=`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`;
+  window.open(url,'_blank');
+}
+
+/********** INICIALIZAR **********/
+renderCats();
+render();
+renderCart();
+
+// Reinicia carrito al salir (navegación o cerrar pestaña)
+window.addEventListener('beforeunload', ()=>{ try{ sessionStorage.removeItem('gummy-cart'); }catch{} });
+</script>
+</body>
+</html>
